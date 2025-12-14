@@ -1,0 +1,12 @@
+curl --request PUT \
+  --url https://console.vast.ai/api/v0/machines/{machine_id}/dnotify \
+  --header 'Authorization: Bearer <token>' \
+  --header 'Content-Type: application/json' \
+  --data '
+{
+  "sdate": "2023-10-30T14:00:00Z",
+  "duration": 2,
+  "maintenance_reason": "Routine hardware check",
+  "maintenance_category": "software"
+}
+'
