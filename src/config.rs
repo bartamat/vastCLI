@@ -4,7 +4,7 @@ use std::fs;
 use std::io::{self, Write};
 use std::path::PathBuf;
 
-const API_KEY_FILE: &str = "vast_key";
+const API_KEY_FILE: &str = ".vast_key";
 
 pub struct Config {
     api_key_path: PathBuf,
