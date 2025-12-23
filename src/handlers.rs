@@ -1,9 +1,8 @@
 use crate::api::VastAiClient;
-use crate::config::Config;
 use crate::models::{MaintRequest, UnlistRequest};
 use crate::ui;
 
-pub fn handle_maint(id: Option<u64>) {
+pub fn handle_maint(id: Option<u64>, api_key: &str) {
     ui::print_header("VastAI Maintenance Mode");
 
     let machine_id = ui::prompt_machine_id(id);
@@ -26,32 +25,14 @@ pub fn handle_maint(id: Option<u64>) {
         return;
     }
 
-    let config = Config::new();
-    let api_key = match config.get_api_key() {
-        Ok(key) => key,
-        Err(e) => {
-            ui::print_error(&format!("Failed to get API key: {}", e));
-            return;
-        }
-    };
-
     let client = VastAiClient::new();
-    let _ = client.send_maintenance_request(&request, machine_id, &api_key);
+    let _ = client.send_maintenance_request(&request, machine_id, api_key);
 }
 
-pub fn handle_list() {
+pub fn handle_list(api_key: &str) {
     ui::print_header("VastAI List Instances");
 
-    let config = Config::new();
-    let api_key = match config.get_api_key() {
-        Ok(key) => key,
-        Err(e) => {
-            ui::print_error(&format!("Failed to get API key: {}", e));
-            return;
-        }
-    };
-
-    ui::show_list_preview(&api_key);
+    ui::show_list_preview(api_key);
 
     if !ui::confirm_action() {
         ui::print_cancelled();
@@ -59,10 +40,10 @@ pub fn handle_list() {
     }
 
     let client = VastAiClient::new();
-    let _ = client.list_instances(&api_key);
+    let _ = client.list_instances(api_key);
 }
 
-pub fn handle_unlist(id: Option<u64>) {
+pub fn handle_unlist(id: Option<u64>, api_key: &str) {
     ui::print_header("VastAI Unlist Instance");
 
     let instance_id = ui::prompt_machine_id(id);
@@ -75,15 +56,6 @@ pub fn handle_unlist(id: Option<u64>) {
         return;
     }
 
-    let config = Config::new();
-    let api_key = match config.get_api_key() {
-        Ok(key) => key,
-        Err(e) => {
-            ui::print_error(&format!("Failed to get API key: {}", e));
-            return;
-        }
-    };
-
     let client = VastAiClient::new();
-    let _ = client.unlist_instance(&request, instance_id, &api_key);
+    let _ = client.unlist_instance(&request, instance_id, api_key);
 }

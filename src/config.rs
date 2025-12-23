@@ -20,18 +20,11 @@ impl Config {
     pub fn get_api_key(&self) -> io::Result<String> {
         match self.read_api_key_from_file() {
             Ok(key) if !key.trim().is_empty() => {
-                println!(
-                    "{} API key from {}",
-                    "Using".green(),
-                    API_KEY_FILE.cyan()
-                );
+                println!("{} API key from {}", "Using".green(), API_KEY_FILE.cyan());
                 Ok(key.trim().to_string())
             }
             _ => {
-                println!(
-                    "{} API key file not found or empty",
-                    "Warning:".yellow()
-                );
+                println!("{} API key file not found or empty", "Warning:".yellow());
                 self.prompt_and_save_api_key()
             }
         }
@@ -42,8 +35,16 @@ impl Config {
     }
 
     fn prompt_and_save_api_key(&self) -> io::Result<String> {
+        println!();
+        println!(
+            "{} {}",
+            "Get your key here:".cyan(),
+            "https://cloud.vast.ai/manage-keys/".blue().underline()
+        );
+        println!();
+
         let api_key: String = Input::new()
-            .with_prompt("VastAI API Key (Bearer token)")
+            .with_prompt("VastAI API Key")
             .interact()
             .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
 
