@@ -13,6 +13,33 @@ pub struct UnlistRequest {
     pub id: u64,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MachinesResponse {
+    pub machines: Vec<Machine>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Machine {
+    pub machine_id: u64,
+    pub hostname: String,
+    #[serde(default)]
+    pub gpu_max_cur_temp: Option<f64>,
+    #[serde(default)]
+    pub reliability2: Option<f64>,
+    #[serde(default)]
+    pub gpu_occupancy: Option<String>,
+    #[serde(default)]
+    pub earn_hour: Option<f64>,
+    #[serde(default)]
+    pub driver_version: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SavedMachine {
+    pub machine_id: u64,
+    pub hostname: String,
+}
+
 impl MaintRequest {
     pub fn new(
         sdate: String,

@@ -21,9 +21,11 @@ fn main() {
         }
     };
 
+    let verbose = cli.info;
+
     match cli.command {
-        Commands::Maint { id } => handlers::handle_maint(id, &api_key),
-        Commands::List => handlers::handle_list(&api_key),
-        Commands::Unlist { id } => handlers::handle_unlist(id, &api_key),
+        Commands::Maint { id } => handlers::handle_maint(id, &api_key, verbose),
+        Commands::List => handlers::handle_list(&api_key, verbose),
+        Commands::Unlist { id } => handlers::handle_unlist(id, &api_key, verbose),
     }
 }
