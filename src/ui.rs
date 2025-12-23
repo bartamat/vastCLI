@@ -1,3 +1,4 @@
+use chrono::{Local, TimeZone};
 use colored::Colorize;
 use dialoguer::{Input, Select};
 use serde::Serialize;
@@ -17,11 +18,33 @@ pub fn prompt_machine_id(id: Option<u64>) -> u64 {
 }
 
 pub fn prompt_start_date() -> String {
-    Input::new()
-        .with_prompt("Start date (ISO 8601 format)")
-        .default("2023-10-30T14:00:00Z".to_string())
-        .interact()
-        .unwrap()
+    let now = Local::now();
+    let default_display = now.format("%Y-%m-%d_%H:%M").to_string();
+
+    loop {
+        let user_input: String = Input::new()
+            .with_prompt("Start date (YYYY-MM-DD HH:MM)")
+            .default(default_display.clone())
+            .interact()
+            .unwrap();
+
+        // Parse the user input and add timezone
+        match chrono::NaiveDateTime::parse_from_str(&user_input.replace(' ', "T"), "%Y-%m-%dT%H:%M")
+        {
+            Ok(parsed) => {
+                // Convert to local timezone and format as ISO 8601
+                return Local.from_local_datetime(&parsed).unwrap().to_rfc3339();
+            }
+            Err(_) => {
+                println!(
+                    "{}",
+                    "Invalid date format! Please use YYYY-MM-DD HH:MM (e.g., 2025-12-23 14:30)"
+                        .red()
+                );
+                continue;
+            }
+        }
+    }
 }
 
 pub fn prompt_duration() -> u32 {
@@ -69,7 +92,11 @@ pub fn show_list_preview(api_key: &str) {
     println!();
     println!("{}", "Preview:".yellow().bold());
     println!("  {}: {}", "Endpoint".bold(), "GET /instances");
-    println!("  {}: ********{}", "API Key".bold(), &api_key[api_key.len().saturating_sub(4)..]);
+    println!(
+        "  {}: ********{}",
+        "API Key".bold(),
+        &api_key[api_key.len().saturating_sub(4)..]
+    );
     println!();
 }
 
@@ -84,7 +111,10 @@ pub fn confirm_action() -> bool {
             "accept" => return true,
             "cancel" => return false,
             _ => {
-                println!("{}", "Invalid input. Please type 'accept' or 'cancel'.".red());
+                println!(
+                    "{}",
+                    "Invalid input. Please type 'accept' or 'cancel'.".red()
+                );
                 continue;
             }
         }
@@ -105,7 +135,11 @@ pub fn print_request_details(method: &str, url: &str, api_key: &str, body: Optio
     println!("{}", "Request details:".cyan());
     println!("  {}: {}", "Method".bold(), method);
     println!("  {}: {}", "URL".bold(), url);
-    println!("  {}: Bearer ********{}", "Authorization".bold(), &api_key[api_key.len().saturating_sub(4)..]);
+    println!(
+        "  {}: Bearer ********{}",
+        "Authorization".bold(),
+        &api_key[api_key.len().saturating_sub(4)..]
+    );
 
     if let Some(json_body) = body {
         println!("  {}:", "Body".bold());
